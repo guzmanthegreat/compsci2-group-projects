@@ -1,0 +1,16 @@
+Is it a mammal?
+Does it have fur?
+Does it have a tail?
+Does it lay eggs?
+
+Can it swim?
+
+N N Y Y N
+N N N Y Y
+N N Y Y Y
+Y N Y N Y
+Y Y Y N N
+Y Y N N Y
+Y N N N N
+N Y Y N Y
+Y N Y Y N

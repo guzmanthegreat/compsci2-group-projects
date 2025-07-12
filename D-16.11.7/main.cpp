@@ -1,11 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <vector>
 #include <cmath>
 #include <string>
 #include <cctype>
-#include <cstdlib>
 using namespace std;
 
 struct Fact {
@@ -95,67 +93,17 @@ void classify(DecisionNode* root) {
 
 void loadData(const string& filename, vector<string>& criteriaNames, string& objectiveName, vector<Fact>& facts) {
     ifstream file(filename);
+    if (!file) {
+        cerr << "Failed to open file: " << filename << endl;
+        exit(1);
+    }
     string line;
     while (getline(file, line) && !line.empty()) criteriaNames.push_back(line);
     getline(file, objectiveName);
     while (getline(file, line)) if (!line.empty()) facts.push_back({line});
 }
 
-//16.11.8
-
-struct ExprNode {
-    string value;
-    ExprNode* left;
-    ExprNode* right;
-    ExprNode(string v) : value(v), left(nullptr), right(nullptr) {}
-};
-
-ExprNode* buildExprTree(const string& expr, int& index) {
-    while (index < expr.size() && isspace(expr[index])) ++index;
-
-    if (isdigit(expr[index])) {
-        string num;
-        while (index < expr.size() && isdigit(expr[index])) num += expr[index++];
-        return new ExprNode(num);
-    }
-
-    if (expr[index] == '(') {
-        ++index; // skip (
-        ExprNode* left = buildExprTree(expr, index);
-        while (index < expr.size() && isspace(expr[index])) ++index;
-        char op = expr[index++];
-        ExprNode* right = buildExprTree(expr, index);
-        ++index; // skip )
-        ExprNode* root = new ExprNode(string(1, op));
-        root->left = left;
-        root->right = right;
-        return root;
-    }
-    return nullptr;
-}
-
-int evalExprTree(ExprNode* root) {
-    if (!root->left && !root->right) return stoi(root->value);
-    int l = evalExprTree(root->left);
-    int r = evalExprTree(root->right);
-    if (root->value == "+") return l + r;
-    if (root->value == "-") return l - r;
-    if (root->value == "*") return l * r;
-    if (root->value == "/") return l / r;
-    return 0;
-}
-
-void runExpressionEvaluator() {
-    cout << "Enter expression (e.g. (3+(4*2))): ";
-    string expr;
-    getline(cin, expr);
-    int idx = 0;
-    ExprNode* tree = buildExprTree(expr, idx);
-    cout << "Result: " << evalExprTree(tree) << endl;
-}
-
 int main() {
-    // 16.11.7
     vector<string> criteria;
     string objective;
     vector<Fact> facts;
@@ -168,11 +116,5 @@ int main() {
 
     cout << "\n--- ID3 Decision Tree ---\n";
     classify(tree);
-
-    // 16.11.8
-    cout << "\n--- Expression Evaluator ---\n";
-    cin.ignore();
-    runExpressionEvaluator();
-
     return 0;
 }
